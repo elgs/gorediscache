@@ -1,2 +1,2 @@
-# go-redis-cache
+# gorediscache
 Go redis cache.
