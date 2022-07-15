@@ -1,4 +1,4 @@
-module github.com/gorediscache
+module github.com/elgs/gorediscache
 
 go 1.18
 
