@@ -11,7 +11,7 @@ type Cache struct {
 	DefaultTTL time.Duration
 }
 
-func (this *Cache) Set(key string, value string, ttl time.Duration) error {
+func (this *Cache) SetString(key string, value any, ttl time.Duration) error {
 	conn := this.redisPool.Get()
 	defer conn.Close()
 	if ttl <= 0 {
@@ -21,7 +21,7 @@ func (this *Cache) Set(key string, value string, ttl time.Duration) error {
 	return err
 }
 
-func (this *Cache) Get(key string) (string, error) {
+func (this *Cache) GetString(key string) (string, error) {
 	conn := this.redisPool.Get()
 	defer conn.Close()
 	// TODO: increase ttl if found
@@ -30,6 +30,32 @@ func (this *Cache) Get(key string) (string, error) {
 		return "", err
 	}
 	return redis.String(reply, err)
+}
+
+func (this *Cache) SetMap(key string, value map[string]any, ttl time.Duration) error {
+	conn := this.redisPool.Get()
+	defer conn.Close()
+	if ttl <= 0 {
+		ttl = this.DefaultTTL
+	}
+	a := []any{key}
+	for k, v := range value {
+		a = append(a, k, v)
+	}
+	conn.Send("HMSET", a...)
+	conn.Send("EXPIRE", key, ttl.Seconds())
+	return conn.Flush()
+}
+
+func (this *Cache) GetMap(key string) (map[string]string, error) {
+	conn := this.redisPool.Get()
+	defer conn.Close()
+	// TODO: increase ttl if found
+	reply, err := conn.Do("HGETALL", key)
+	if err != nil || reply == nil {
+		return nil, err
+	}
+	return redis.StringMap(reply, err)
 }
 
 func (this *Cache) Delete(keys ...any) error {
