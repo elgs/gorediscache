@@ -32,7 +32,7 @@ func (this *Cache) GetString(key string) (string, error) {
 	return redis.String(reply, err)
 }
 
-func (this *Cache) SetMap(key string, value map[string]any, ttl time.Duration) error {
+func (this *Cache) SetMap(key string, value map[string]string, ttl time.Duration) error {
 	conn := this.redisPool.Get()
 	defer conn.Close()
 	if ttl <= 0 {

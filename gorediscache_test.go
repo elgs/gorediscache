@@ -38,7 +38,7 @@ func TestCacheString(t *testing.T) {
 func TestCacheMap(t *testing.T) {
 	cache := NewCache("redis://localhost:6379/2", 0)
 	defer cache.Close()
-	err := cache.SetMap("m", map[string]any{"a": "b", "c": "d"}, 0)
+	err := cache.SetMap("m", map[string]string{"a": "b", "c": "d"}, 0)
 	if err != nil {
 		t.Error(err)
 	}
